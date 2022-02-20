@@ -25,7 +25,9 @@ const GraphDataController: FC<{ dataset: Dataset; filters: FiltersState }> = ({ 
           size: 5,
           label: batchJob.node,
           color: "#ed7047",
-          image: `${process.env.PUBLIC_URL}/images/concept.svg`
+          cluster: batchJob.app,
+          tag: batchJob.app
+          // image: `${process.env.PUBLIC_URL}/images/concept.svg`
         });
         jobNodes.push(batchJob.node);
       }
@@ -33,7 +35,9 @@ const GraphDataController: FC<{ dataset: Dataset; filters: FiltersState }> = ({ 
         graph.addNode(batchJob.pred, {
           size: 5,
           label: batchJob.pred,
-          image: `${process.env.PUBLIC_URL}/images/person.svg`
+          cluster: batchJob.app,
+          tag: batchJob.app
+          // image: `${process.env.PUBLIC_URL}/images/person.svg`
         });
         jobNodes.push(batchJob.pred);
       }
@@ -65,12 +69,14 @@ const GraphDataController: FC<{ dataset: Dataset; filters: FiltersState }> = ({ 
   /**
    * Apply filters to graphology:
    */
-  // useEffect(() => {
-  //   const { clusters, tags } = filters;
-  //   graph.forEachNode((node, { cluster, tag }) =>
-  //     graph.setNodeAttribute(node, "hidden", !clusters[cluster] || !tags[tag]),
-  //   );
-  // }, [graph, filters]);
+  useEffect(() => {
+    console.log("***", "running filter");
+    const { clusters, tags } = filters;
+    graph.forEachNode((node, { cluster, tag }) =>{
+      console.log("***", cluster, tag);
+      graph.setNodeAttribute(node, "hidden", !clusters[cluster] || !tags[tag])
+    });
+  }, [graph, filters]);
 
   return <>{children}</>;
 };

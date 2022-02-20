@@ -8,7 +8,7 @@ import GraphSettingsController from "./GraphSettingsController";
 import GraphEventsController from "./GraphEventsController";
 import GraphDataController from "./GraphDataController";
 import DescriptionPanel from "./DescriptionPanel";
-import { Dataset, FiltersState } from "../types";
+import { Cluster, Dataset, FiltersState, Tag } from "../types";
 import ClustersPanel from "./ClustersPanel";
 import SearchField from "./SearchField";
 import drawLabel from "../canvas-utils";
@@ -30,12 +30,43 @@ const Root: FC = () => {
   });
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
 
+  const getTags = (data: Dataset) => {
+    let jobs = data.jobs;
+    let tags: Tag[] = [];
+    let apps: string[] = [];
+    for (let i = 0; i < jobs.length; i++) {
+      jobs[i].cluster = jobs[i].app;
+      jobs[i].tag = jobs[i].app;
+      if (apps.indexOf(jobs[i].app) < 0) {
+        tags.push({ key: jobs[i].app, image: '' });
+        apps.push(jobs[i].app);
+      }
+    }
+    return tags;
+  }
+
+  const getClusters = (data: Dataset) => {
+    let jobs = data.jobs;
+    let clusters: Cluster[] = [];
+    let apps: string[] = [];
+    for (let i = 0; i < jobs.length; i++) {
+      if (apps.indexOf(jobs[i].app) < 0) {
+        clusters.push({ key: jobs[i].app, clusterLabel: jobs[i].app, color: '' });
+        apps.push(jobs[i].app);
+      }
+    }
+    return clusters;
+  }
+
   // Load data on mount:
   useEffect(() => {
     fetch(`${process.env.PUBLIC_URL}/jobs.json`)
       .then((res) => res.json())
       .then((dataset: Dataset) => {
         setDataset(dataset);
+        dataset.tags = getTags(dataset);
+        dataset.clusters = getClusters(dataset);
+        console.log("***", mapValues(keyBy(dataset.clusters, "key"), constant(true)));
         setFiltersState({
           clusters: mapValues(keyBy(dataset.clusters, "key"), constant(true)),
           tags: mapValues(keyBy(dataset.tags, "key"), constant(true)),
@@ -51,15 +82,15 @@ const Root: FC = () => {
       <SigmaContainer
         graphOptions={{ type: "directed" }}
         initialSettings={{
-          nodeProgramClasses: { image: getNodeProgramImage() },
+          // nodeProgramClasses: { circle: getNodeCir() },
           labelRenderer: drawLabel,
-          defaultNodeType: "image",
+          defaultNodeType: "circle",
           defaultEdgeType: "arrow",
           labelDensity: 0.07,
           labelGridCellSize: 60,
           labelRenderedSizeThreshold: 15,
           labelFont: "Lato, sans-serif",
-          zIndex: true,
+          zIndex: true
         }}
         className="react-sigma"
       >
@@ -80,24 +111,24 @@ const Root: FC = () => {
                   <BiBookContent />
                 </button>
               </div>
-             
+
               <div className="ico">
-                
+
               </div>
-                <FullScreenControl
-                  className="ico"
-                  customEnterFullScreen={<BsArrowsFullscreen />}
-                  customExitFullScreen={<BsFullscreenExit />}
-                />
-                <ZoomControl
-                  className="ico"
-                  customZoomIn={<BsZoomIn />}
-                  customZoomOut={<BsZoomOut />}
-                  customZoomCenter={<BiRadioCircleMarked />}
-                />
-                {/* <ControlsContainer> */}
-                  <ForceAtlasControl className="ico" autoRunFor={2000} />
-                {/* </ControlsContainer> */}
+              <FullScreenControl
+                className="ico"
+                customEnterFullScreen={<BsArrowsFullscreen />}
+                customExitFullScreen={<BsFullscreenExit />}
+              />
+              <ZoomControl
+                className="ico"
+                customZoomIn={<BsZoomIn />}
+                customZoomOut={<BsZoomOut />}
+                customZoomCenter={<BiRadioCircleMarked />}
+              />
+              {/* <ControlsContainer> */}
+              <ForceAtlasControl className="ico" autoRunFor={2000} />
+              {/* </ControlsContainer> */}
             </div>
             <div className="contents">
               <div className="ico">
