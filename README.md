@@ -32,3 +32,15 @@ The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+To Do
+
+1 - time on X-axis
+2 - pagination like view
+3 - Status filter
+4 - runtime paginated data
+5 - styling changes
+    - In-progress / Abondoned / Completed / Not Started
+6 - Dashboard view
+7 - Display Failure path
+8 - Service integration
